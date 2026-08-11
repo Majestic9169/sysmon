@@ -1,4 +1,9 @@
-use sysmon::cpu_and_mem_info;
+mod reports;
+mod utils;
+
 fn main() {
-    let _ = cpu_and_mem_info();
+    if let Err(err) = reports::print_report() {
+        eprintln!("Something went wrong");
+        eprintln!("{}", err);
+    };
 }
