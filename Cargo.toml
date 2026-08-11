@@ -1,0 +1,8 @@
+[package]
+name = "sysmon"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+human-memsize = "0.1.0"
+procfs = { version = "0.18.0", features = ["serde"] }
