@@ -49,7 +49,7 @@ pub fn print_top_mem_processes() -> Result<(), ProcError> {
         }
     }
 
-    mem_snapshot.sort_unstable_by(|a, b| b.mem.cmp(&a.mem));
+    mem_snapshot.sort_unstable_by_key(|a| a.mem);
 
     println!(
         "{:>4} {:>6} {:>10} {}",
@@ -91,20 +91,20 @@ pub fn print_top_cpu_processes() -> Result<(), ProcError> {
     let cpu_ticks_old = get_total_ticks(&procfs::KernelStats::current()?.total);
     std::thread::sleep(std::time::Duration::from_secs(1));
     for process in procfs::process::all_processes()?.flatten() {
-        if let Ok(stat) = process.stat() {
-            if let Some(prev) = cpu_process_map.get(&stat.pid) {
-                let curr_ticks = stat.utime + stat.stime;
-                cpu_snapshot.push(MyCPUProcess {
-                    pid: prev.pid,
-                    name: stat.comm,
-                    cpu_time: curr_ticks - prev.cpu_time,
-                })
-            }
+        if let Ok(stat) = process.stat()
+            && let Some(prev) = cpu_process_map.get(&stat.pid)
+        {
+            let curr_ticks = stat.utime + stat.stime;
+            cpu_snapshot.push(MyCPUProcess {
+                pid: prev.pid,
+                name: stat.comm,
+                cpu_time: curr_ticks - prev.cpu_time,
+            })
         }
     }
     let cpu_ticks_new = get_total_ticks(&procfs::KernelStats::current()?.total);
 
-    cpu_snapshot.sort_unstable_by(|a, b| b.cpu_time.cmp(&a.cpu_time));
+    cpu_snapshot.sort_unstable_by_key(|a| a.cpu_time);
     println!("{:>4} {:>6} {:>6} {}", "Rank", "PID", "CPU(%)", "Process");
 
     for (i, snap) in cpu_snapshot.iter().take(5).enumerate() {
