@@ -49,7 +49,7 @@ pub fn print_top_mem_processes() -> Result<(), ProcError> {
         }
     }
 
-    mem_snapshot.sort_unstable_by_key(|a| a.mem);
+    mem_snapshot.sort_unstable_by_key(|a| std::cmp::Reverse(a.mem));
 
     println!(
         "{:>4} {:>6} {:>10} {}",
@@ -104,7 +104,7 @@ pub fn print_top_cpu_processes() -> Result<(), ProcError> {
     }
     let cpu_ticks_new = get_total_ticks(&procfs::KernelStats::current()?.total);
 
-    cpu_snapshot.sort_unstable_by_key(|a| a.cpu_time);
+    cpu_snapshot.sort_unstable_by_key(|a| std::cmp::Reverse(a.cpu_time));
     println!("{:>4} {:>6} {:>6} {}", "Rank", "PID", "CPU(%)", "Process");
 
     for (i, snap) in cpu_snapshot.iter().take(5).enumerate() {
