@@ -4,7 +4,7 @@
 
 ## Quickstart
 
-assuming rust toolchain is installed
+Download executeable from [releases](https://github.com/Majestic9169/sysmon/releases)
 
 ```bash
 ./sysmon
@@ -38,4 +38,22 @@ nix run
 
 # build prod
 nix build
+```
+
+## Non-Autistic Normal Setup
+
+
+**1. Installation**
+
+[Installation Guide](https://rust-lang.org/tools/install/)
+
+```bash
+#linux/macos
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+**2. Build**
+
+```bash
+cargo run -r
 ```
