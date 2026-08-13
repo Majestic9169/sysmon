@@ -7,24 +7,26 @@ fn format_duration(d: &std::time::Duration) -> (i32, i32, i32) {
 
     (days, hours, minutes)
 }
-pub fn print_uptime() -> Result<(), procfs::ProcError> {
+pub fn print_uptime() -> Result<String, procfs::ProcError> {
     let uptime = procfs::Uptime::current()?;
     let formatted_uptime = format_duration(&uptime.uptime_duration());
-    println!(
-        "System Uptime : {} Days {} Hours {} Minutes",
+    let result = format!(
+        "System Uptime : {} Days {} Hours {} Minutes\n",
         formatted_uptime.0, formatted_uptime.1, formatted_uptime.2
     );
 
-    Ok(())
+    Ok(result)
 }
 
-pub fn print_loadavg() -> Result<(), procfs::ProcError> {
+pub fn print_loadavg() -> Result<String, procfs::ProcError> {
+    let mut result = String::new();
+
     let loadavg = procfs::LoadAverage::current()?;
 
-    println!("Load Average");
-    println!("{:>3} min : {}", 1, loadavg.one);
-    println!("{:>3} min : {}", 5, loadavg.five);
-    println!("{:>3} min : {}", 15, loadavg.fifteen);
+    result += &format!("Load Average\n");
+    result += &format!("{:>3} min : {}\n", 1, loadavg.one);
+    result += &format!("{:>3} min : {}\n", 5, loadavg.five);
+    result += &format!("{:>3} min : {}\n", 15, loadavg.fifteen);
 
-    Ok(())
+    Ok(result)
 }

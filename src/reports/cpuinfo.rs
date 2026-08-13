@@ -1,5 +1,7 @@
 use procfs::Current;
-pub fn print_cpu_info() -> Result<(), procfs::ProcError> {
+pub fn print_cpu_info() -> Result<String, procfs::ProcError> {
+    let mut result: String = String::new();
+
     let cpu = procfs::CpuInfo::current()?;
     let logical_processors = cpu.num_cores();
     let model_name = cpu
@@ -8,8 +10,8 @@ pub fn print_cpu_info() -> Result<(), procfs::ProcError> {
             "Missing CPU model name",
         )))?;
 
-    println!("CPU Model : {}", model_name);
-    println!("Logical CPUs : {}", logical_processors);
+    result += &format!("CPU Model : {}\n", model_name);
+    result += &format!("Logical CPUs : {}\n", logical_processors);
 
-    Ok(())
+    Ok(result)
 }

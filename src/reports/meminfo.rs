@@ -1,6 +1,8 @@
 use procfs::Current;
 
-pub fn print_mem_info() -> Result<(), procfs::ProcError> {
+pub fn print_mem_info() -> Result<String, procfs::ProcError> {
+    let mut result: String = String::new();
+
     let mem = procfs::Meminfo::current()?;
 
     let avail_mem = mem
@@ -9,20 +11,23 @@ pub fn print_mem_info() -> Result<(), procfs::ProcError> {
             "Missing Available Memory",
         )))?;
 
-    println!(
-        "Total Memory : {}",
+    result += &format!(
+        "Total Memory : {}\n",
         human_memsize::human_size(mem.mem_total)
     );
-    println!(
-        "Available Memory : {}",
+    result += &format!(
+        "Available Memory : {}\n",
         human_memsize::human_size(avail_mem)
     );
-    println!("Free Memory : {}", human_memsize::human_size(mem.mem_free));
+    result += &format!(
+        "Free Memory : {}\n",
+        human_memsize::human_size(mem.mem_free)
+    );
 
-    println!(
-        "Memory Usage : {:.1}%",
+    result += &format!(
+        "Memory Usage : {:.1}%\n",
         100f64 * (1f64 - (avail_mem as f64 / mem.mem_total as f64))
     );
 
-    Ok(())
+    Ok(result)
 }

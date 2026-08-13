@@ -2,16 +2,18 @@ use crate::reports::utilization::get_total_ticks;
 use procfs::{Current, CurrentSI, ProcError};
 use std::collections::HashMap;
 
-pub fn print_all_processes() -> Result<(), ProcError> {
-    println!(
-        "{:>5} {:>5} {:>5} {:>7} {:>10} {}",
+pub fn print_all_processes() -> Result<String, ProcError> {
+    let mut result = String::new();
+
+    result += &format!(
+        "{:>5} {:>5} {:>5} {:>7} {:>10} {}\n",
         "PID", "PPID", "STATE", "THREADS", "VmSize(MB)", "NAME"
     );
 
     for process in procfs::process::all_processes()?.flatten() {
         if let Ok(status) = process.status() {
-            println!(
-                "{:>5} {:>5} {:>5} {:>7} {:>10} {}",
+            result += &format!(
+                "{:>5} {:>5} {:>5} {:>7} {:>10} {}\n",
                 status.pid,
                 status.ppid,
                 status.state.chars().next().unwrap_or('X'),
@@ -22,7 +24,7 @@ pub fn print_all_processes() -> Result<(), ProcError> {
         }
     }
 
-    Ok(())
+    Ok(result)
 }
 struct MyMemProcess {
     pid: i32,
@@ -36,7 +38,9 @@ struct MyCPUProcess {
     name: String,
 }
 
-pub fn print_top_mem_processes() -> Result<(), ProcError> {
+pub fn print_top_mem_processes() -> Result<String, ProcError> {
+    let mut result = String::new();
+
     let mut mem_snapshot: Vec<MyMemProcess> = Vec::new();
 
     for process in procfs::process::all_processes()?.flatten() {
@@ -51,14 +55,14 @@ pub fn print_top_mem_processes() -> Result<(), ProcError> {
 
     mem_snapshot.sort_unstable_by_key(|a| std::cmp::Reverse(a.mem));
 
-    println!(
-        "{:>4} {:>6} {:>10} {}",
+    result += &format!(
+        "{:>4} {:>6} {:>10} {}\n",
         "Rank", "PID", "Memory(MB)", "Process"
     );
 
     for (i, snap) in mem_snapshot.iter().take(5).enumerate() {
-        println!(
-            "{:>4} {:>6} {:>10} {}",
+        result += &format!(
+            "{:>4} {:>6} {:>10} {}\n",
             i + 1,
             snap.pid,
             (snap.mem as f64 * 0.001024).floor(),
@@ -66,10 +70,12 @@ pub fn print_top_mem_processes() -> Result<(), ProcError> {
         );
     }
 
-    Ok(())
+    Ok(result)
 }
 
-pub fn print_top_cpu_processes() -> Result<(), ProcError> {
+pub fn print_top_cpu_processes() -> Result<String, ProcError> {
+    let mut result = String::new();
+
     let mut cpu_process_map: HashMap<i32, MyCPUProcess> = HashMap::new();
     let mut cpu_snapshot: Vec<MyCPUProcess> = Vec::new();
     let num_cpus = procfs::CpuInfo::current()
@@ -105,11 +111,11 @@ pub fn print_top_cpu_processes() -> Result<(), ProcError> {
     let cpu_ticks_new = get_total_ticks(&procfs::KernelStats::current()?.total);
 
     cpu_snapshot.sort_unstable_by_key(|a| std::cmp::Reverse(a.cpu_time));
-    println!("{:>4} {:>6} {:>6} {}", "Rank", "PID", "CPU(%)", "Process");
+    result += &format!("{:>4} {:>6} {:>8} {}\n", "Rank", "PID", "CPU(%)", "Process");
 
     for (i, snap) in cpu_snapshot.iter().take(5).enumerate() {
-        println!(
-            "{:>4} {:>6} {:<4.2}% {}",
+        result += &format!(
+            "{:>4} {:>6} {:>6.2}% {}\n",
             i + 1,
             snap.pid,
             100.0 * num_cpus * (snap.cpu_time as f64 / (cpu_ticks_new - cpu_ticks_old)),
@@ -117,5 +123,5 @@ pub fn print_top_cpu_processes() -> Result<(), ProcError> {
         );
     }
 
-    Ok(())
+    Ok(result)
 }
