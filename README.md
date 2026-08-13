@@ -42,7 +42,6 @@ nix build
 
 ## Non-Autistic Normal Setup
 
-
 **1. Installation**
 
 [Installation Guide](https://rust-lang.org/tools/install/)
@@ -55,5 +54,19 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 **2. Build**
 
 ```bash
-cargo run -r
+make build
+```
+
+**3. Run**
+
+In normal mode
+
+```bash
+make run
+```
+
+In live mode
+
+```bash
+make live
 ```
