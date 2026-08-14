@@ -1,10 +1,13 @@
 <div align="center">
-  <img width="200" src="https://www.freepnglogos.com/uploads/doraemon-png/flying-broom-and-doraemon-png-download-19.png"/>
+  <div>
+    <img width="200" src="./sysmon.png"/>
+  </div>
+  linux process monitor
 </div>
 
 ## Quickstart
 
-Download executeable from [releases](https://github.com/Majestic9169/sysmon/releases)
+Download executeable from [releases](https://github.com/Majestic9169/sysmon/releases) or get it from `./target/release/` after building
 
 ```bash
 ./sysmon
@@ -54,7 +57,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 **2. Build**
 
 ```bash
-make build
+make build # cargo build --release
 ```
 
 **3. Run**
@@ -62,11 +65,11 @@ make build
 In normal mode
 
 ```bash
-make run
+make run   # cargo run --release
 ```
 
 In live mode
 
 ```bash
-make live
+make live  # cargo run --release -- -T 5
 ```
